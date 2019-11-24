@@ -22,10 +22,10 @@ class Actor(nn.Module):
 
         self.fc_layers = [nn.Linear(state_size, layers[0])]
 
-        for i in range(1, len(layers-1)):
+        for i in range(1, len(layers)):
             self.fc_layers.append(nn.Linear(layers[i-1], layers[i]))
 
-        self.fc_layers.append(layers[-1], action_size)
+        self.fc_layers.append(nn.Linear(layers[-1], action_size))
 
         self.reset_parameters()
 

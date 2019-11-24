@@ -22,7 +22,7 @@ class Critic(nn.Module):
         self.seed = torch.manual_seed(seed)
         self.fc_layers = [nn.Linear(state_size, layers[0]), nn.Linear(layers[0] + action_size, layers[1])]
 
-        for i in range(2, len(layers) - 1):
+        for i in range(2, len(layers)):
             self.fc_layers.append(nn.Linear(layers[i-1], layers[i]))
 
         self.fc_layers.append(nn.Linear(layers[-1], 1))

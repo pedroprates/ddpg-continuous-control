@@ -7,7 +7,7 @@ from utils.utils import hidden_init
 class Actor(nn.Module):
     """ Actor (policy) model """
 
-    def __init__(self, state_size, action_size, seed, layers):
+    def __init__(self, state_size, action_size, seed, l1, l2):
         """ Initialize parameters and build the model
         
         Params
@@ -20,24 +20,20 @@ class Actor(nn.Module):
         super(Actor, self).__init__()
         self.seed = torch.manual_seed(seed)
 
-        self.fc_layers = [nn.Linear(state_size, layers[0])]
-
-        for i in range(1, len(layers)):
-            self.fc_layers.append(nn.Linear(layers[i-1], layers[i]))
-
-        self.fc_layers.append(nn.Linear(layers[-1], action_size))
+        self.fc1 = nn.Linear(state_size, l1)
+        self.fc2 = nn.Linear(l1, l2)
+        self.fc3 = nn.Linear(l2, action_size)
 
         self.reset_parameters()
 
     def reset_parameters(self):
-        for i in range(len(self.fc_layers) - 1):
-            self.fc_layers[i].weight.data.uniform_(*hidden_init(self.fc_layers[i]))
-
-        self.fc_layers[-1].weight.data.uniform_(-3e-3, 3e-3)
+        self.fc1.weight.data.uniform_(*hidden_init(self.fc1))
+        self.fc2.weight.data.uniform_(*hidden_init(self.fc2))
+        self.fc3.weight.data.uniform_(-3e-3, 3e-3)
 
     def forward(self, state):
         """ Forward propagation on the Actor (policy) network, mapping states -> actions """
-        for i in range(len(self.fc_layers) - 1):
-            state = F.relu(self.fc_layers[i](state))
-        
-        return F.tanh(self.fc_layers[-1](state))
+        state = F.relu(self.fc1(state))
+        state = F.relu(self.fc2(state))
+
+        return F.tanh(self.fc3(state))

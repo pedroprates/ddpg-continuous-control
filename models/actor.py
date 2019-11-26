@@ -33,7 +33,7 @@ class Actor(nn.Module):
 
     def forward(self, state):
         """ Forward propagation on the Actor (policy) network, mapping states -> actions """
-        state = F.relu(self.fc1(state))
-        state = F.relu(self.fc2(state))
+        x = F.relu(self.fc1(state))
+        x = F.relu(self.fc2(x))
 
-        return F.tanh(self.fc3(state))
+        return F.tanh(self.fc3(x))

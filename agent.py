@@ -10,13 +10,14 @@ from models.critic import Critic
 from utils.noise import OrsnteinUhlenbeck
 from utils.replay import ReplayBuffer
 
-BUFFER_SIZE = int(1e5)
+BUFFER_SIZE = int(1e6)
 BATCH_SIZE = 128
 GAMMA = .99
 TAU = 1e-3
-LR_ACTOR = 1e-4
+LR_ACTOR = 6e-4
 LR_CRITIC = 1e-3
 WEIGHT_DECAY = 0
+N_UPDATES = 10
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class Agent():
@@ -38,6 +39,7 @@ class Agent():
         self.action_size = action_size
         self.random_seed = random_seed
         random.seed(random_seed)
+        np.random.seed(random_seed)
 
         # Actor
         self.actor_local = Actor(self.state_size, self.action_size, self.random_seed, *actor_layers).to(DEVICE)
@@ -55,14 +57,16 @@ class Agent():
         # Replay Buffer
         self.memory = ReplayBuffer(self.action_size, BUFFER_SIZE, BATCH_SIZE, self.random_seed)
 
-    def step(self, state, action, reward, next_state, done):
+    def step(self, states, actions, rewards, next_states, dones):
         """ Save experience in replay memory, and use random sample from buffer to learn """
-        self.memory.add(state, action, reward, next_state, done)
+        for state, action, reward, next_state, done in zip(states, actions, rewards, next_states, dones):
+            self.memory.add(state, action, reward, next_state, done)
         
         # Learn only if there is enough samples on memory
         if len(self.memory) > BATCH_SIZE:
-            experiences = self.memory.sample()
-            self.learn(experiences, GAMMA)
+            for _ in range(N_UPDATES):
+                experiences = self.memory.sample()
+                self.learn(experiences, GAMMA)
 
     def act(self, state, add_noise=True):
         """ Returns actions for given state as per current policy """
@@ -74,7 +78,8 @@ class Agent():
         self.actor_local.train()
 
         if add_noise:
-            actions += self.noise.sample()
+            # actions += self.noise.sample()
+            actions += np.random.normal(0, .3)
         
         return np.clip(actions, -1, 1)
 

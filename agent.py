@@ -40,13 +40,13 @@ class Agent():
         random.seed(random_seed)
 
         # Actor
-        self.actor_local = Actor(self.state_size, self.action_size, self.random_seed, actor_layers).to(DEVICE)
-        self.actor_target = Actor(self.state_size, self.action_size, self.random_seed, actor_layers).to(DEVICE)
+        self.actor_local = Actor(self.state_size, self.action_size, self.random_seed, *actor_layers).to(DEVICE)
+        self.actor_target = Actor(self.state_size, self.action_size, self.random_seed, *actor_layers).to(DEVICE)
         self.actor_optimizer = optim.Adam(self.actor_local.parameters(), lr=LR_ACTOR)
 
         # Critic
-        self.critic_local = Critic(self.state_size, self.action_size, self.random_seed, critic_layers).to(DEVICE)
-        self.critic_target = Critic(self.state_size, self.action_size, self.random_seed, critic_layers).to(DEVICE)
+        self.critic_local = Critic(self.state_size, self.action_size, self.random_seed, *critic_layers).to(DEVICE)
+        self.critic_target = Critic(self.state_size, self.action_size, self.random_seed, *critic_layers).to(DEVICE)
         self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)
 
         # Noise

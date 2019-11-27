@@ -22,6 +22,7 @@ class Critic(nn.Module):
         self.seed = torch.manual_seed(seed)
 
         self.fc1 = nn.Linear(state_size, l1)
+        self.bn1 = nn.BatchNorm1d(l1)
         self.fc2 = nn.Linear(l1 + action_size, l2)
         self.fc3 = nn.Linear(l2, 1)
 
@@ -34,7 +35,7 @@ class Critic(nn.Module):
 
     def forward(self, state, action):
         """ Forward propagation on the Critic (value) network, mapping (state, action) pairs -> Q-values """
-        state = F.relu(self.fc1(state))
+        state = F.relu(self.bn1(self.fc1(state)))
         sa = torch.cat((state, action), dim=1)
         sa = F.relu(self.fc2(sa))
 

@@ -21,6 +21,7 @@ class Actor(nn.Module):
         self.seed = torch.manual_seed(seed)
 
         self.fc1 = nn.Linear(state_size, l1)
+        self.bn1 = nn.BatchNorm1d(l1)
         self.fc2 = nn.Linear(l1, l2)
         self.fc3 = nn.Linear(l2, action_size)
 
@@ -33,7 +34,7 @@ class Actor(nn.Module):
 
     def forward(self, state):
         """ Forward propagation on the Actor (policy) network, mapping states -> actions """
-        x = F.relu(self.fc1(state))
+        x = F.relu(self.bn1(self.fc1(state)))
         x = F.relu(self.fc2(x))
 
         return F.tanh(self.fc3(x))

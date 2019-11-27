@@ -17,6 +17,7 @@ TAU = 1e-3
 LR_ACTOR = 6e-4
 LR_CRITIC = 1e-3
 WEIGHT_DECAY = 0
+LEARN_STEPS = 20
 N_UPDATES = 10
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -42,6 +43,7 @@ class Agent():
         np.random.seed(random_seed)
 
         # Actor
+        print(f'Agent running on {device}')
         self.actor_local = Actor(self.state_size, self.action_size, self.random_seed, *actor_layers).to(DEVICE)
         self.actor_target = Actor(self.state_size, self.action_size, self.random_seed, *actor_layers).to(DEVICE)
         self.actor_optimizer = optim.Adam(self.actor_local.parameters(), lr=LR_ACTOR)
@@ -57,13 +59,13 @@ class Agent():
         # Replay Buffer
         self.memory = ReplayBuffer(self.action_size, BUFFER_SIZE, BATCH_SIZE, self.random_seed)
 
-    def step(self, states, actions, rewards, next_states, dones):
+    def step(self, states, actions, rewards, next_states, dones, time_step):
         """ Save experience in replay memory, and use random sample from buffer to learn """
         for state, action, reward, next_state, done in zip(states, actions, rewards, next_states, dones):
             self.memory.add(state, action, reward, next_state, done)
         
         # Learn only if there is enough samples on memory
-        if len(self.memory) > BATCH_SIZE:
+        if len(self.memory) > BATCH_SIZE and time_step % LEARN_STEPS ==0:
             for _ in range(N_UPDATES):
                 experiences = self.memory.sample()
                 self.learn(experiences, GAMMA)
@@ -78,8 +80,8 @@ class Agent():
         self.actor_local.train()
 
         if add_noise:
-            # actions += self.noise.sample()
-            actions += np.random.normal(0, .3)
+            actions += self.noise.sample()
+            # actions += np.random.normal(0, .3)
         
         return np.clip(actions, -1, 1)
 

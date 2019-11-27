@@ -43,7 +43,7 @@ class Agent():
         np.random.seed(random_seed)
 
         # Actor
-        print(f'Agent running on {device}')
+        print(f'Agent running on {DEVICE}')
         self.actor_local = Actor(self.state_size, self.action_size, self.random_seed, *actor_layers).to(DEVICE)
         self.actor_target = Actor(self.state_size, self.action_size, self.random_seed, *actor_layers).to(DEVICE)
         self.actor_optimizer = optim.Adam(self.actor_local.parameters(), lr=LR_ACTOR)
@@ -65,12 +65,12 @@ class Agent():
             self.memory.add(state, action, reward, next_state, done)
         
         # Learn only if there is enough samples on memory
-        if len(self.memory) > BATCH_SIZE and time_step % LEARN_STEPS ==0:
+        if len(self.memory) > BATCH_SIZE and time_step % LEARN_STEPS == 0:
             for _ in range(N_UPDATES):
                 experiences = self.memory.sample()
                 self.learn(experiences, GAMMA)
 
-    def act(self, state, add_noise=True, epislon=1.0):
+    def act(self, state, add_noise=True, epsilon=1.0):
         """ Returns actions for given state as per current policy """
         state = torch.from_numpy(state).float().to(DEVICE)
         self.actor_local.eval()
@@ -81,7 +81,7 @@ class Agent():
 
         if add_noise:
             # actions += self.noise.sample()
-            actions += np.random.normal(0, .3) * epislon
+            actions += np.random.normal(0, .3) * epsilon
         
         return np.clip(actions, -1, 1)
 

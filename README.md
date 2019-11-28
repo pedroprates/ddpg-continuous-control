@@ -2,6 +2,8 @@
 
 This work is part of the [Udacity Deep Reinforcement Learning Nanodegree](https://www.udacity.com/course/deep-reinforcement-learning-nanodegree--nd893), which consists on solving the [Reacher](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Examples.md#reacher) environment. 
 
+![alt-text](images/reacher.gif)
+
 ## Set Up
 
 To setup your local Python environment for running Unity environments checkout the instructions on [this Github repository](https://github.com/udacity/deep-reinforcement-learning#dependencies). On this work we'll use [PyTorch](https://pytorch.org/) to build the networks. On `requirements.txt` you'll also find some other packages required.
